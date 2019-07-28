@@ -1,0 +1,13 @@
+all:
+	go build ./...
+
+install:
+	go install ./...
+
+test:
+	go test ./...
+
+clean:
+	go clean ./...
+
+.PHONY: all install test clean

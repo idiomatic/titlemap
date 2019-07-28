@@ -1,0 +1,26 @@
+Some TV Series S1D1 | 2 | Some TV Series 101 Pilot
+Some TV Series S1D1 | 3 | Some TV Series 102 The Second Episode
+Some TV Series S1D1 | 4 | Some TV Series 103 The Third Episode
+Some TV Series S1D2 | 2 | Some TV Series 104 The Fourth Episode # on the Second Disc
+Some TV Series S1D2 | 3 | Some TV Series 105 The Season Finale
+Some TV Series S2D1 | 2 | Some TV Series 201 The Next Season
+Some TV Series S2D1 | 3 | Some TV Series 202 Series Finale
+Some TV Series S2D1 | 4 | Some TV Series Bonus Bloopers
+
+# source and output need not match
+# source and output need not follow any particular format
+MINISERIES D1 | 1 | A Mini-Series (Part 1)
+MINISERIES D1 | 2 | A Mini-Series (Part 2)
+MINISERIES D2 | 1 | A Mini-Series (Part 3)
+
+# fourth column is optional transcoder arguments
+Poorly Mastered S1 | 1 | Poorly Mastered 101 Beginning | --chapter=1 --audio=3
+Poorly Mastered S1 | 1 | Poorly Mastered 102 Middle | --chapter=2
+Poorly Mastered S1 | 1 | Poorly Mastered 103 Season Finale | --chapter=3
+Poorly Mastered S2 | 1 | Poorly Mastered 201 Still Poor | --chapter=1
+Poorly Mastered S2 | 1 | Poorly Mastered 202 Just Plain Broke | --chapter=2
+Poorly Mastered S3 | 2 | Poorly Mastered 301 Getting Better
+
+Unknown Output Title S1D1 |  | Unknown Output Title 101 Unknown Name Too
+
+Ignored Source

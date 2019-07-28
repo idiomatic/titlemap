@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Label</key>
+		<string>com.example.transcode</string>
+		<key>Program</key>
+		<string>/bin/sh</string>
+		<key>ProgramArguments</key>
+		<array>
+			<string>/bin/sh</string>
+			<string>-c</string>
+			<string>
+cleanup() {
+    rm -f "$log" "$output"
+    exit 255
+}
+
+notify() {
+    osascript -e "display notification \"${@:2}\" with title \"$1\" sound name \"Tink\""
+}
+
+atomicmv() {
+    # TODO undo locking on failure
+    local src=$1 dest=$2 unique=${HOSTNAME%.local}-$$
+    mv "$src" "$src-moving-$unique" || return $?
+    mv "$src-moving-$unique" "$dest-moving-$unique" || { rv=$?; mv -i "$src-moving-$unique" "$src"; return $rv; }
+    mv "$dest-moving-$unique" "$dest"
+}
+
+# take a beat to avoid thundering herd collisions
+sleep $((($RANDOM % 10) + 1))s
+
+shopt -s nullglob
+found=1
+while [ "$found" = 1 ]; do
+    found=
+
+    # fake loop to skip unreadable sources
+    for source in /Users/user/Queue/Very\ Fast\ 720p30/*.{dvdmedia,mkv,bluray}; do
+        [ -r "$source" ] || continue
+
+        srcdir=${source%/*}
+        srcfile=${source##*/}
+
+	# parent directory specifies preset (and other flags)
+        presetdir=${srcdir##*/}
+
+	# extension, ostensibly .mkv
+        ext=${srcfile##*.}
+
+	# without extension and parent directories
+        name=${srcfile%.$ext}
+
+	# WorkingDirectory-relative
+        tmpdir="$presetdir"
+        [ -d "$tmpdir" ] || mkdir -p "$tmpdir"
+        input="$tmpdir/$name.$ext"
+        output="$tmpdir/$name.m4v"
+        log="$output.log"
+
+	# split preset from other flags
+        dargs=
+        preset="$presetdir"
+        expr "$preset" : '.* -' >/dev/null && dargs="-${preset#* -}" preset=${preset%% -*}
+	dargs=${dargs//_COLON_/:}
+
+	# split file args (e.g., --audio)
+	fargs=
+        expr "$name" : '.* -' >/dev/null && fargs="-${name#* -}" INDISTINCT_name=${name%% -*}
+	fargs=${fargs//_COLON_/:}
+
+	# if there is no explicit title arg, default to main feature
+        expr "$dargs $fargs" : '.* --title' > /dev/null || dargs="${dargs:+$dargs }--main-feature"
+
+	atomicmv "$source" "$input" || { notify "Transcode: cannot move" "$source"; exit; }
+
+        trap cleanup EXIT
+        nice /usr/local/bin/HandBrakeCLI --input "$input" --output "$output" --preset "$preset" $dargs $fargs 2> "$log" > /dev/null || { notify "Transcode: HandBrake failed" "$input"; exit; }
+        trap - EXIT
+
+	# determine destinations after transcode in case system has changed.
+	# fallback to tmpdir to have no side effect.
+        for destdir in /Users/user/Movies/ "$tmpdir"; do
+            [ -d "$destdir" ] && break
+        done
+        dest="$destdir/$name.m4v"
+        destlog="$destdir/,log/$name.m4v.log"
+        destlog2="$destdir/$name.m4v.log"
+
+	atomicmv "$log" "$destlog" || atomicmv "$log" "$destlog2" || { notify "Transcode: cannot push" "$destlog2"; exit; }
+	atomicmv "$output" "$dest" || { notify "Transcode: cannot push" "$dest"; exit; }
+
+        rm -r "$input" || { notify "Transcode: cannot remove" "$input"; exit; }
+        notify "Transcode: finished" "$name\n$preset${dargs:+ $dargs}${fargs:+ $fargs}"
+
+	# cleanup; may fail silently
+	rm "$tmpdir/.DS_Store" 2> /dev/null
+        rmdir "$tmpdir" 2> /dev/null
+
+        found=1
+        break
+    done
+done
+			</string>
+		</array>
+		<key>WorkingDirectory</key>
+		<string>/tmp</string>
+		<key>RunAtLoad</key>
+		<true/>
+		<key>QueueDirectories</key>
+		<array>
+			<string>/Users/user/Queue/Very Fast 720p30</string>
+		</array>
+                <key>StandardOutPath</key>
+                <string>/tmp/transcode.log</string>
+                <key>StandardErrorPath</key>
+                <string>/tmp/transcode_err.log</string>
+	</dict>
+</plist>
