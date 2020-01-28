@@ -14,13 +14,13 @@ MINISERIES D1 | 2 | A Mini-Series (Part 2)
 MINISERIES D2 | 1 | A Mini-Series (Part 3)
 
 # fourth column is optional transcoder arguments
-Poorly Mastered S1 | 1 | Poorly Mastered 101 Beginning | --chapter=1 --audio=3
-Poorly Mastered S1 | 1 | Poorly Mastered 102 Middle | --chapter=2
-Poorly Mastered S1 | 1 | Poorly Mastered 103 Season Finale | --chapter=3
-Poorly Mastered S2 | 1 | Poorly Mastered 201 Still Poor | --chapter=1
-Poorly Mastered S2 | 1 | Poorly Mastered 202 Just Plain Broke | --chapter=2
+Poorly Mastered S1 | --title=1 --chapter=1 --audio=3 | Poorly Mastered 101 Beginning
+Poorly Mastered S1 | --title=1 --chapter=2 | Poorly Mastered 102 Middle
+Poorly Mastered S1 | --title=1 --chapter=3 | Poorly Mastered 103 Season Finale
+Poorly Mastered S2 | --title=1 --chapter=1 |  Poorly Mastered 201 Still Poor 
+Poorly Mastered S2 | --title=1 --chapter=2 |  Poorly Mastered 202 Just Plain Broke 
 Poorly Mastered S3 | 2 | Poorly Mastered 301 Getting Better
 
 Unknown Output Title S1D1 |  | Unknown Output Title 101 Unknown Name Too
 
-Ignored Source
+Source Whose Output Filename Is the Same

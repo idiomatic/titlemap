@@ -1,19 +1,37 @@
 The titlemap tools are used to manage selection, naming, and (optionally)
-parameters of source videos for a transcoder such as HandBrakeCLI.
+parameters of videos for a transcoder such as HandBrakeCLI.
 
-Per the UNIX philosophy, they do one thing and do it well.  They are
-designed for composition by passing state via a standard I/O pipeline.
+The title description file/stream has the format:
 
-The title description file/stream is:
+    Base Prefix | Title Number | Output Prefix | Transcoder Options
 
-    Source Prefix | Title Number | Output Prefix [ | Transcoder Options ]
+## example directly transcoding
 
-## queueing for transcode
+    cat titles | titlemap ~/Movies --preset "$preset" $hbargs --outputdir ~/Public/ ~/Rip
 
-    cat titles | titlemapomit ~/Movies | titlemapqueue --queue ~/Queue/Very\ Fast\ 720p30 ~/Rip
+## install
 
-## fixing names after LaunchAgent
+	go install ./cmd/...
 
-Removes `--title` and other transcoder filename-encoded command-line switches.
+## testing survey
 
-    for n in *--*; do mv -i "$n" "${n%% --*}.${n##*.}"; done
+	setopt +o nomatch
+	preset="HQ 720p30 Surround"
+	hbargs="--subtitle=none"
+	collection="$preset $hbargs"
+	ripdirs=( /Volumes/Archive*/Video/M*/*Rip
+		/Volumes/Archive*/Video/TV*/*Rip{,/*Season*}
+		/Volumes/Everything/Rip/*Rip{,/*Season*} )
+	servedirs=( /Volumes/Galactica/Public/Video/M*/"$collection"
+		 /Volumes/Galactica/Public/Video/TV*/"$collection"/* )
+	reviewdir=~/Public/Review/"$collection"
+	cat ~/titles | go run ~/go/src/github.com/idiomatic/titlemap/cmd/titlemap/main.go --color \
+		 $ripdirs $servedirs $reviewdir
+
+## transcoding
+
+	# ... setup ...
+    cat ~/titles | ~/go/bin/titlemap --progress --color \
+		 --preset "$preset" $hbargs \
+		 --outputdir $reviewdir \
+	     $ripdirs $serverdirs $reviewdir
