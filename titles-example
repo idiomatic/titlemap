@@ -1,3 +1,12 @@
+# input and output filenames need not match
+# input and output filenames need not follow any particular format
+
+# the columns are:
+# 1) input
+# 2) title, which is (now) optional, and may specify just the title number or all the transcode switches
+# 3) output, which is (now) optional
+# 4) (future) metadata
+
 Some TV Series S1D1 | 2 | Some TV Series 101 Pilot
 Some TV Series S1D1 | 3 | Some TV Series 102 The Second Episode
 Some TV Series S1D1 | 4 | Some TV Series 103 The Third Episode
@@ -7,13 +16,10 @@ Some TV Series S2D1 | 2 | Some TV Series 201 The Next Season
 Some TV Series S2D1 | 3 | Some TV Series 202 Series Finale
 Some TV Series S2D1 | 4 | Some TV Series Bonus Bloopers
 
-# source and output need not match
-# source and output need not follow any particular format
 MINISERIES D1 | 1 | A Mini-Series (Part 1)
 MINISERIES D1 | 2 | A Mini-Series (Part 2)
 MINISERIES D2 | 1 | A Mini-Series (Part 3)
 
-# fourth column is optional transcoder arguments
 Poorly Mastered S1 | --title=1 --chapter=1 --audio=3 | Poorly Mastered 101 Beginning
 Poorly Mastered S1 | --title=1 --chapter=2 | Poorly Mastered 102 Middle
 Poorly Mastered S1 | --title=1 --chapter=3 | Poorly Mastered 103 Season Finale
@@ -21,6 +27,7 @@ Poorly Mastered S2 | --title=1 --chapter=1 |  Poorly Mastered 201 Still Poor
 Poorly Mastered S2 | --title=1 --chapter=2 |  Poorly Mastered 202 Just Plain Broke 
 Poorly Mastered S3 | 2 | Poorly Mastered 301 Getting Better
 
-Unknown Output Title S1D1 |  | Unknown Output Title 101 Unknown Name Too
+Default Output Title S1D1 |  | Default Output Title 101 Main Feature
 
 Source Whose Output Filename Is the Same
+Source Whose Output Filename Is Also the Same | 2

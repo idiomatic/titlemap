@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -59,7 +60,7 @@ func (ts Duration) String() string {
 type TranscodeArgs struct {
 	Preset   string `json:"preset,omitempty"`
 	Title    int    `json:"title,omitempty"`
-	Chapters string `json:"chapters,omitempty"`
+	Chapter  string `json:"chapter,omitempty"`
 	StartAt  string `json:"start_at,omitempty"`
 	StopAt   string `json:"stop_at,omitempty"`
 	Encoder  string `json:"encoder,omitempty"`
@@ -82,7 +83,7 @@ func (ta TranscodeArgs) Args() []string {
 	}
 	addStringArg("--preset", ta.Preset)
 	addIntArg("--title", ta.Title)
-	addStringArg("--chapters", ta.Chapters)
+	addStringArg("--chapter", ta.Chapter)
 	addStringArg("--start-at", ta.StartAt)
 	addStringArg("--stop-at", ta.StopAt)
 	addStringArg("--encoder", ta.Encoder)
@@ -96,7 +97,7 @@ func (ta TranscodeArgs) Args() []string {
 func (ta *TranscodeArgs) DefineFlags(f *flag.FlagSet) {
 	f.StringVar(&ta.Preset, "preset", ta.Preset, "HandBrake preset")
 	f.IntVar(&ta.Title, "title", ta.Title, "HandBrake title")
-	f.StringVar(&ta.Chapters, "chapters", ta.Chapters, "HandBrake chapters")
+	f.StringVar(&ta.Chapter, "chapter", ta.Chapter, "HandBrake chapter")
 	f.StringVar(&ta.StartAt, "start-at", ta.StartAt, "HandBrake start-at offset")
 	f.StringVar(&ta.StopAt, "stop-at", ta.StopAt, "HandBrake stop-at duration after start-at")
 	f.StringVar(&ta.Encoder, "encoder", ta.Encoder, "HandBrake video encoder")
@@ -108,7 +109,14 @@ func (ta *TranscodeArgs) DefineFlags(f *flag.FlagSet) {
 func (ta *TranscodeArgs) Parse(args []string) error {
 	f := flag.NewFlagSet("HandBrakeCLI", flag.ContinueOnError)
 	ta.DefineFlags(f)
-	return f.Parse(args)
+	err := f.Parse(args)
+	if err != nil {
+		return err
+	}
+	if len(f.Args()) > 0 {
+		return errors.New("transcode flags error")
+	}
+	return nil
 }
 
 // Run HandBrake to transcode a video.

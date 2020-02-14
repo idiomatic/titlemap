@@ -75,11 +75,6 @@ func (t *Title) Parse(line string) error {
 func (t Title) TranscodeArgs() []string {
 	args, _ := shellquote.Split(strings.TrimSpace(t.RawTranscodeArgs))
 
-	// shorthand for main feature
-	if t.RawTranscodeArgs == "" {
-		return []string{"--main-feature"}
-	}
-
 	// shorthand for title
 	if isInt(t.RawTranscodeArgs) {
 		return []string{"--title=" + t.RawTranscodeArgs}
