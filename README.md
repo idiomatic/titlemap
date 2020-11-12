@@ -52,19 +52,13 @@ The title description file/stream has the format:
 ### Very Fast 720p "H.264"
 
     (
+        setopt nullglob;
         preset="Very Fast 720p30"
         hbargs=(--subtitle=none)
         collection="$preset $hbargs"
-        servedirs=(
-            /Volumes/Galactica/Public/Video/M*/"$collection"
-            /Volumes/Galactica/Public/Video/TV*/"$collection"/*
-        )
+        servedirs=(/Volumes/Galactica/Public/Video/{Mov*/"$collection",TV*/"$collection"/*})
         reviewdir=~/Public/Review/"$collection"
-        ripdirs=(
-            /Volumes/Archive*/Video/M*/*Rip
-            /Volumes/Archive*/Video/TV*/*Rip{,/*Season*}
-            /Volumes/Rocinate/Rip/*Rip{,/*Season*}
-        )
+        ripdirs=(/Volumes/{{PlanetExpress,Rocinate}/Archive,Archive*}/Video/{Mov*/*Rip,TV*/*Rip{,/*Season*}} /Volumes/Rocinate/Rip/*Rip{,/*Season*})
         cat ~/titles | ~/go/bin/titlemap --progress --color \
             --preset "$preset" $hbargs \
             --outputdir "$reviewdir" \
