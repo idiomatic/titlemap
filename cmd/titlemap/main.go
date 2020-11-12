@@ -38,6 +38,7 @@ const (
 // constant-ish, i.e., no sync required
 var (
 	showProgress     bool
+	quiet            bool
 	outputDir        string
 	logDir           string
 	txArgs           TranscodeArgs // common transcode args
@@ -77,7 +78,8 @@ func main() {
 	// parse command line switches
 	flag.StringVar(&outputDir, "outputdir", outputDir, "Dir for transcode output")
 	flag.StringVar(&logDir, "logdir", logDir, "Dir for transcode logs")
-	flag.BoolVar(&showProgress, "progress", showProgress, "Progress")
+	flag.BoolVar(&showProgress, "progress", showProgress, "Transcode progress")
+	flag.BoolVar(&quiet, "quiet", color, "Hide inactionable output")
 	flag.BoolVar(&color, "color", color, "Output with colors")
 	txArgs.DefineFlags(flag.CommandLine)
 	flag.Parse()
@@ -149,7 +151,9 @@ func main() {
 		// skip if already processed
 		//if _, found := outputs.Lookup(title.OutputBaseName); found {
 		if _, found := outputs[t.OutputBaseName]; found {
-			log.Println(ProcessedTitle(t))
+			if !quiet {
+				log.Println(ProcessedTitle(t))
+			}
 			continue
 		}
 
@@ -157,7 +161,9 @@ func main() {
 		//input, found := inputs.Lookup(title.BaseName)
 		input, found := inputs[t.BaseName]
 		if !found {
-			log.Println(OfflineTitle(t))
+			if !quiet {
+				log.Println(OfflineTitle(t))
+			}
 			continue
 		}
 
@@ -193,7 +199,9 @@ func main() {
 
 			log.Println(JustProcessedTitle(t, time.Duration(elapsed)))
 		} else {
-			log.Println(TodoTitle(t))
+			if !quiet {
+				log.Println(TodoTitle(t))
+			}
 		}
 	}
 }
