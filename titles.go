@@ -3,6 +3,8 @@ package titlemap
 import (
 	"errors"
 	"fmt"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 	"strconv"
 	"strings"
 
@@ -49,24 +51,45 @@ func (t Title) String() string {
 		t.BaseName, t.RawTranscodeArgs, t.OutputBaseName, t.RawMetadata, t.RawComment)
 }
 
+func clean(s string) string {
+	s = strings.TrimSpace(s)
+	if strings.ContainsRune(s, '\\') {
+		s = `"` + s + `"`
+		if unquoted, err := strconv.Unquote(s); err == nil {
+			return unquoted
+		}
+	}
+	// Be advised macOS prefers NFD (denormalized) filenames
+	s, _, _ = transform.String(norm.NFD, s)
+	return s
+}
+
 func (t *Title) Parse(line string) error {
+	// escape # as \x23
+	// escape | as \x7C
 	t.RawComment = trimBefore(line, '#')
 	line = trimAfter(line, '#')
 	fields := splitOnRune(line, '|')
 
 	fieldCount := len(fields)
 	if fieldCount >= 1 {
-		t.BaseName = strings.TrimSpace(fields[0])
-		t.OutputBaseName = t.BaseName
+		s := clean(fields[0])
+		t.BaseName = s
+		t.OutputBaseName = s
 	}
 	if fieldCount >= 2 {
 		t.RawTranscodeArgs = strings.TrimSpace(fields[1])
 	}
 	if fieldCount >= 3 {
-		t.OutputBaseName = strings.TrimSpace(fields[2])
+		t.OutputBaseName = clean(fields[2])
 	}
 	if fieldCount >= 4 {
-		t.RawMetadata = strings.TrimSpace(fields[3])
+		// XXX unused
+		s := strings.TrimSpace(fields[3])
+		if quoted, err := strconv.Unquote(s); err == nil {
+			s = quoted
+		}
+		t.RawMetadata = s
 	}
 
 	return nil
