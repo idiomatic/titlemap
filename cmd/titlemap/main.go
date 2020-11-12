@@ -13,12 +13,10 @@ package main
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -129,36 +127,6 @@ func main() {
 		<-signalChan
 		log.Printf("quitting now\n")
 		cancel()
-	}()
-
-	go func() {
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			doneMutex.Lock()
-			defer doneMutex.Unlock()
-
-			currentMutex.Lock()
-			defer currentMutex.Unlock()
-
-			e := json.NewEncoder(w)
-			e.SetIndent("", "  ")
-
-			var elapsed Duration
-			if !currentStarted.IsZero() {
-				elapsed = since(currentStarted)
-			}
-
-			e.Encode(struct {
-				Stopping           bool `json:"stopping,omitempty"`
-				TranscodeArgs      `json:"args"`
-				*titlemap.Title    `json:"title,omitempty"`
-				*Transcode         `json:"transcode,omitempty"`
-				*TranscodeProgress `json:"progress,omitempty"`
-				Started            time.Time `json:"started,omitempty"`
-				Elapsed            Duration  `json:"elapsed,omitempty"`
-			}{done, txArgs, currentTitle, currentTranscode, currentProgress,
-				currentStarted, elapsed})
-		})
-		log.Fatal(http.ListenAndServe(listenAddr, nil))
 	}()
 
 	// process lines of titlemap-formatted standard input
