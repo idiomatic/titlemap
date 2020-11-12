@@ -149,7 +149,6 @@ func main() {
 		}
 
 		// skip if already processed
-		//if _, found := outputs.Lookup(title.OutputBaseName); found {
 		if _, found := outputs[t.OutputBaseName]; found {
 			if !quiet {
 				log.Println(ProcessedTitle(t))
@@ -158,7 +157,6 @@ func main() {
 		}
 
 		// skip if input is offline
-		//input, found := inputs.Lookup(title.BaseName)
 		input, found := inputs[t.BaseName]
 		if !found {
 			if !quiet {
