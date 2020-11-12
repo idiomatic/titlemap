@@ -90,6 +90,11 @@ func main() {
 	// scan dirs for different video categories
 	// HACK dir is both an source and destination
 	for _, dir := range flag.Args() {
+		// HACK skip non-directories
+		if fi, err := os.Stat(dir); err != nil || !fi.IsDir() {
+			continue
+		}
+
 		names, err := Readdirnames(dir)
 		if err != nil {
 			log.Fatal(err)
