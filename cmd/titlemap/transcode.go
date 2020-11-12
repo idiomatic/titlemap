@@ -58,14 +58,17 @@ func (ts Duration) String() string {
 
 // TranscodeArgs specifies popular HandBrake options
 type TranscodeArgs struct {
-	Preset   string `json:"preset,omitempty"`
-	Title    int    `json:"title,omitempty"`
-	Chapter  string `json:"chapter,omitempty"`
-	StartAt  string `json:"start_at,omitempty"`
-	StopAt   string `json:"stop_at,omitempty"`
-	Encoder  string `json:"encoder,omitempty"`
-	Subtitle string `json:"subtitle,omitempty"`
-	NLMeans  string `json:"nlmeans,omitempty"`
+	Preset       string `json:"preset,omitempty"`
+	Title        int    `json:"title,omitempty"`
+	Chapters     string `json:"chapters,omitempty"`
+	StartAt      string `json:"start_at,omitempty"`
+	StopAt       string `json:"stop_at,omitempty"`
+	Encoder      string `json:"encoder,omitempty"`
+	Subtitle     string `json:"subtitle,omitempty"`
+	NLMeans      string `json:"nlmeans,omitempty"`
+	Crop         string `json:"crop,omitempty"`
+	Audio        string `json:"audio,omitempty"`
+	AudioEncoder string `json:"audio_encoder,omitempty"`
 }
 
 // Args returns a slice of non-default HandBrakeCLI args
@@ -83,26 +86,42 @@ func (ta TranscodeArgs) Args() []string {
 	}
 	addStringArg("--preset", ta.Preset)
 	addIntArg("--title", ta.Title)
-	addStringArg("--chapter", ta.Chapter)
+	addStringArg("--chapters", ta.Chapters)
 	addStringArg("--start-at", ta.StartAt)
 	addStringArg("--stop-at", ta.StopAt)
 	addStringArg("--encoder", ta.Encoder)
 	addStringArg("--subtitle", ta.Subtitle)
 	addStringArg("--nlmeans", ta.NLMeans)
+	addStringArg("--crop", ta.Crop)
+	addStringArg("--audio", ta.Audio)
+	addStringArg("--aencoder", ta.AudioEncoder)
 	return args
 }
 
 // DefineFlags registers popular HandBrake parameters as flags.  Used
 // on command line args and the titlemap transcodeArgs column.
 func (ta *TranscodeArgs) DefineFlags(f *flag.FlagSet) {
-	f.StringVar(&ta.Preset, "preset", ta.Preset, "HandBrake preset")
+	f.StringVar(&ta.Preset, "preset", ta.Preset,
+		"HandBrake preset")
 	f.IntVar(&ta.Title, "title", ta.Title, "HandBrake title")
-	f.StringVar(&ta.Chapter, "chapter", ta.Chapter, "HandBrake chapter")
-	f.StringVar(&ta.StartAt, "start-at", ta.StartAt, "HandBrake start-at offset")
-	f.StringVar(&ta.StopAt, "stop-at", ta.StopAt, "HandBrake stop-at duration after start-at")
-	f.StringVar(&ta.Encoder, "encoder", ta.Encoder, "HandBrake video encoder")
-	f.StringVar(&ta.Subtitle, "subtitle", ta.Subtitle, "HandBrake subtitle track")
-	f.StringVar(&ta.NLMeans, "nlmeans", ta.NLMeans, "HandBrake video denoise filter")
+	f.StringVar(&ta.Chapters, "chapters", ta.Chapters,
+		"HandBrake chapters")
+	f.StringVar(&ta.StartAt, "start-at", ta.StartAt,
+		"HandBrake start-at offset")
+	f.StringVar(&ta.StopAt, "stop-at", ta.StopAt,
+		"HandBrake stop-at duration after start-at")
+	f.StringVar(&ta.Encoder, "encoder", ta.Encoder,
+		"HandBrake video encoder")
+	f.StringVar(&ta.Subtitle, "subtitle", ta.Subtitle,
+		"HandBrake subtitle track")
+	f.StringVar(&ta.NLMeans, "nlmeans", ta.NLMeans,
+		"HandBrake video denoise filter")
+	f.StringVar(&ta.Crop, "crop", ta.Crop,
+		"HandBrake picture cropping")
+	f.StringVar(&ta.Audio, "audio", ta.Audio,
+		"HandBrake audio")
+	f.StringVar(&ta.AudioEncoder, "aencoder", ta.AudioEncoder,
+		"HandBrake audio encoder")
 }
 
 // Parse a titlemap transcodeArgs column.
