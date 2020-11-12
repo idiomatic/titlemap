@@ -86,6 +86,26 @@ The title description file/stream has the format:
         hbargs=(--encoder=x265_10bit --subtitle=none)
     ...
 
+### Manually
+
+    (
+        title="..."
+        title="Once Upon a Time in Hollywood"
+        setopt nullglob
+        ripdir=/Volumes/Rocinate/Rip/BluRay\ Rip
+        for args in \
+            'Very Fast 720p30 --subtitle=none' \
+            'Very Fast 480p30 --encoder=x265_10bit --subtitle=none' \
+            'HQ 720p30 Surround --subtitle=none' \
+            'HQ 1080p30 Surround --encoder=x265_10bit --subtitle=none'
+        do
+			preset=${args%% --*} hbargs=${args#$preset }
+			out=~/Public/Review/"$args/$title.m4v"
+            [ -e "$out" ] || HandBrakeCLI --preset "$preset" $hbargs --input "$ripdir/$title.mkv" --output "$out"
+        done
+    )
+
 ## monitoring webservice
 
     curl localhost:8888
+
