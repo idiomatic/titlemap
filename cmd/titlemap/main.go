@@ -32,7 +32,6 @@ const (
 	outputExt                   = ".m4v"
 	logExt                      = ".log"
 	outputDirAdjacentLogArchive = ",log"
-	listenAddr                  = ":8888"
 )
 
 // constant-ish, i.e., no sync required
@@ -223,7 +222,7 @@ func transcodeHelper(input string, txArgs TranscodeArgs, finalOutput string, fin
 	defer os.Remove(tempOutput)
 
 	tmpLog := tempOutput + logExt
-	logFile, err := os.OpenFile(tmpLog, os.O_RDWR|os.O_CREATE, 0755)
+	logFile, err := os.OpenFile(tmpLog, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		return err
 	}
@@ -275,6 +274,12 @@ func transcodeHelper(input string, txArgs TranscodeArgs, finalOutput string, fin
 	}
 
 	if err = os.Rename(tempOutput, finalOutput); err != nil {
+		return err
+	}
+
+	// TempFile creates with 0600; make og+r, umask permitting
+	mask := syscall.Umask(0)
+	if err = os.Chmod(finalOutput, 0666&^os.FileMode(mask).Perm()); err != nil {
 		return err
 	}
 
